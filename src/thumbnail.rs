@@ -20,8 +20,8 @@ impl ThumbnailGenerator {
     }
 
     pub fn quality(mut self, quality: u8) -> Self {
-        if (0..=100).contains(&quality) {
-            panic!("Quality must be between 0 and 100");
+        if !(0..=100).contains(&quality) {
+            panic!("Quality must be between 0 and 100, got {}", quality);
         }
         self.quality = quality;
         self
@@ -29,7 +29,7 @@ impl ThumbnailGenerator {
 
     pub fn resolution(mut self, width: u32, height: u32) -> Self {
         if width == 0 || height == 0 {
-            panic!("Resolution must be greater than 0");
+            panic!("Resolution must be greater than 0, got {}x{}", width, height);
         }
         self.resolution = (width, height);
         self
