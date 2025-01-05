@@ -34,4 +34,54 @@ impl ThumbnailGenerator {
         self.resolution = (width, height);
         self
     }
+
+    /// Generates a thumbnail for the given video file and saves it to the specified output path.
+    ///
+    /// # Arguments
+    ///
+    /// * `input_path` - The path to the input video file.
+    /// * `output_path` - The path to save the generated thumbnail.
+    ///
+    /// # Returns
+    ///
+    /// This function returns `Ok(())` if the thumbnail is generated successfully or
+    /// an `Err(String)` describing the error if the operation fails.
+    pub fn generate_thumbnail<P: AsRef<Path>>(
+        &self,
+        input_path: P,
+        output_path: P,
+    ) -> Result<(), String> {
+        let input_path = input_path.as_ref();
+        let output_path = output_path.as_ref();
+
+        if !input_path.exists() {
+            return Err(format!("Input file does not exist: {:?}", input_path));
+        }
+
+        let resolution = format!("{}x{}", self.resolution.0, self.resolution.1);
+
+        // Construct and run the FFmpeg command.
+        let status = Command::new("ffmpeg")
+            .args([
+                "-i",
+                input_path.to_str().unwrap(),
+                "-vf",
+                &format!("scale={}", resolution),
+                "-q:v",
+                &self.quality.to_string(),
+                "-frames:v",
+                "1",
+                output_path.to_str().unwrap(),
+            ])
+            .status();
+
+        match status {
+            Ok(status) if status.success() => Ok(()),
+            Ok(status) => Err(format!(
+                "FFmpeg failed with exit code: {}",
+                status.code().unwrap_or(-1)
+            )),
+            Err(err) => Err(format!("Failed to execute FFmpeg: {}", err)),
+        }
+    }
 }

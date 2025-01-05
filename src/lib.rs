@@ -41,13 +41,12 @@
 //! async fn main() -> Result<(), Box<dyn std::error::Error>> {
 //!     let generator = ThumbnailGenerator::new();
 //!     let thumbnail = generator
-//!         .generate_thumbnail("example.mp4")
 //!         .resolution(320, 240)
 //!         .quality(80)
 //!         .extract()
 //!         .await?;
 //!
-//!     thumbnail.save("thumbnail.webp")?;
+//!     thumbnail.generate_thumbnail("video.mp4", "thumbnail.webp")?;
 //!     Ok(())
 //! }
 //! ```
